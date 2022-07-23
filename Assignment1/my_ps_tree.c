@@ -8,6 +8,8 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/queue.h>
+#include "queueADT.h"
 
 int mypstree(int pid) {
     // Guard non-existant process
@@ -17,10 +19,34 @@ int mypstree(int pid) {
         exit(3);
     }
 
+    // Initialize queue with root pid
+    queueType *queue = create();
+    enqueue(pid, queue);
 
+    getChildrenForPid(pid);
     return -1;
 }
 
-int main() {
-    printf("%d", mypstree(69));
+void getChildrenForPid(int pid) {
+    char path[100];
+    char proc[] = "proc/";
+    char task[] = "task/";
+    char children[] = "children\0";
+    sprintf(
+        path,
+        "%s%d%s%d%s",
+        proc,
+        pid,
+        task,
+        pid,
+        children
+    );
+    printf("%s", path);
+    
+    // fopen(childrenPath, 'r');
+}
+
+int main(int argc, char* argv[]) {
+    int targetPid = atoi(argv[1]);
+    mypstree(targetPid);
 }
